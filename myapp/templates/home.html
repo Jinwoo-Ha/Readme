@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI README Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #000000;
+            color: #ffffff;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        h1, h2 {
+            color: #000080;
+        }
+        form {
+            margin-bottom: 20px;
+        }
+        input[type="file"] {
+            display: block;
+            margin-bottom: 10px;
+        }
+        button {
+            background-color: #000080;
+            color: #ffffff;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0000a0;
+        }
+        .error {
+            color: #ff0000;
+            margin-bottom: 20px;
+        }
+        .readme {
+            background-color: #111111;
+            padding: 20px;
+            border-radius: 5px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>AI README Generator</h1>
+        
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type="file" name="source_code" required>
+            <input type="file" name="presentation" accept=".pdf" required>
+            <button type="submit">Generate README</button>
+        </form>
+
+        {% if error %}
+            <div class="error">
+                Error: {{ error }}
+            </div>
+        {% endif %}
+
+        {% if document %}
+            <h2>Generated README:</h2>
+            <div class="readme">
+                {{ document.readme|linebreaks }}
+            </div>
+            <form method="post" action="{% url 'regenerate_readme' document.id %}">
+                {% csrf_token %}
+                <button type="submit">Regenerate README</button>
+            </form>
+        {% endif %}
+    </div>
+</body>
+</html>
