@@ -1,11 +1,11 @@
 from django.urls import path
-from myapp.views import home, regenerate_readme
-from .views import download_files
-
+from . import views
 
 urlpatterns = [
-    path('', home, name='home'),
-    path('regenerate/<int:document_id>/', regenerate_readme, name='regenerate_readme'),
-    path('download/<int:document_id>/', download_files, name='download_files'),
-
+    path('', views.home, name='home'),
+    path('regenerate/<int:document_id>/', views.regenerate_readme, name='regenerate_readme'),
+    path('download/<int:document_id>/', views.download_files, name='download_files'),
+    path('loading/', views.loading, name='loading'),
+    path('result/', views.result, name='result'),
+    path('check_readme_status/', views.check_readme_status, name='check_readme_status'),
 ]

@@ -4,79 +4,153 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI README Generator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #000000;
-            color: #ffffff;
+        :root {
+            --bg-color: #000000;
+            --primary-color: #00ffff;
+            --secondary-color: #1e3799;
+            --text-color: #ffffff;
+            --accent-color: #ff00ff;
+        }
+        body, html {
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
             margin: 0;
-            padding: 20px;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(0, 255, 255, 0.1) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(255, 0, 255, 0.1) 0%, transparent 20%);
+            background-attachment: fixed;
         }
         .container {
-            max-width: 800px;
+            max-width: 1200px;
+            width: 95%;
             margin: 0 auto;
+            padding: 40px 20px;
         }
-        h1, h2 {
-            color: #000080;
+        h1 {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--primary-color);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            text-align: center;
+            font-size: 4em;
+            margin-bottom: 40px;
+            text-shadow: 0 0 10px var(--primary-color), 0 0 20px var(--primary-color);
+        }
+        .card {
+            background-color: rgba(30, 55, 153, 0.2);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 40px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(0, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
         }
         form {
-            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+        .file-input-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .file-input-label {
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            color: var(--bg-color);
+            padding: 15px 30px;
+            border-radius: 50px;
+            cursor: pointer;
+            display: inline-block;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        .file-input-label:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 10px 20px rgba(0, 255, 255, 0.3);
         }
         input[type="file"] {
-            display: block;
-            margin-bottom: 10px;
+            display: none;
+        }
+        #file-name-source, #file-name-presentation {
+            margin-top: 10px;
+            color: var(--primary-color);
         }
         button {
-            background-color: #000080;
-            color: #ffffff;
+            background: linear-gradient(45deg, var(--primary-color), var(--accent-color));
+            color: var(--bg-color);
             border: none;
-            padding: 10px 20px;
+            padding: 20px 40px;
             cursor: pointer;
+            border-radius: 50px;
+            font-weight: bold;
+            font-size: 1.2em;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 20px rgba(0, 255, 255, 0.3);
         }
         button:hover {
-            background-color: #0000a0;
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 15px 30px rgba(0, 255, 255, 0.4);
         }
         .error {
-            color: #ff0000;
-            margin-bottom: 20px;
-        }
-        .readme {
-            background-color: #111111;
-            padding: 20px;
-            border-radius: 5px;
-            white-space: pre-wrap;
-            word-wrap: break-word;
+            color: var(--accent-color);
+            background-color: rgba(255, 0, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            text-align: center;
+            font-weight: bold;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>AI README Generator</h1>
+        <h1 class="glow">AI README Generator</h1>
         
-        <form method="post" enctype="multipart/form-data">
-            {% csrf_token %}
-            <input type="file" name="source_code" required>
-            <input type="file" name="presentation" accept=".pdf" required>
-            <button type="submit">Generate README</button>
-        </form>
+        <div class="card">
+            <form action="{% url 'home' %}" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="file-input-container">
+                    <label for="source-code" class="file-input-label">Choose Source Code File</label>
+                    <input type="file" id="source-code" name="source_code" required onchange="updateFileName(this, 'file-name-source')">
+                    <div id="file-name-source">No file chosen</div>
+                </div>
+                <div class="file-input-container">
+                    <label for="presentation" class="file-input-label">Choose Presentation File (PDF)</label>
+                    <input type="file" id="presentation" name="presentation" accept=".pdf" required onchange="updateFileName(this, 'file-name-presentation')">
+                    <div id="file-name-presentation">No file chosen</div>
+                </div>
+                <button type="submit">Generate README</button>
+            </form>
+        </div>
 
         {% if error %}
             <div class="error">
-                Error: {{ error }}
+                {{ error }}
             </div>
-        {% endif %}
-
-        {% if document %}
-            <h2>Generated README:</h2>
-            <div class="readme">
-                {{ document.readme|linebreaks }}
-            </div>
-            <form method="post" action="{% url 'regenerate_readme' document.id %}">
-                {% csrf_token %}
-                <button type="submit">Regenerate README</button>
-            </form>
-            <a href="{% url 'download_files' document.id %}" class="btn btn-primary">Download Files</a>
         {% endif %}
     </div>
+
+    <script>
+        function updateFileName(input, outputId) {
+            const fileName = input.files[0]?.name || 'No file chosen';
+            document.getElementById(outputId).textContent = fileName;
+        }
+    </script>
 </body>
 </html>
