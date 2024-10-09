@@ -75,6 +75,7 @@
                 {% csrf_token %}
                 <button type="submit">Regenerate README</button>
             </form>
+            <a href="{% url 'download_files' document.id %}" class="btn btn-primary">Download Files</a>
         {% endif %}
     </div>
 </body>

@@ -2,6 +2,13 @@ from django.shortcuts import render, redirect
 from django.core.files.base import ContentFile
 from .models import Document
 from .readme_generator import process_uploaded_files
+from django.http import HttpResponse
+from django.core.files.base import ContentFile
+from wsgiref.util import FileWrapper
+import zipfile
+import io
+import os
+from django.conf import settings
 
 import logging
 
@@ -56,3 +63,38 @@ def regenerate_readme(request, document_id):
         return render(request, 'home.html', {'error': 'Document not found.'})
     except Exception as e:
         return render(request, 'home.html', {'error': str(e)})
+
+
+# zip download
+
+def download_files(request, document_id):
+    document = Document.objects.get(id=document_id)
+    
+    # ZIP 파일 생성
+    zip_buffer = io.BytesIO()
+    image_folder = os.path.join(settings.MEDIA_ROOT, 'images')
+    
+    if not os.path.exists(image_folder):
+        logger.error(f"Image folder does not exist: {image_folder}")
+        return HttpResponse('Image folder does not exist', status=400)
+    
+    with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED) as zip_file:
+        # README 추가
+        zip_file.writestr('README.md', document.readme)
+        
+        # 이미지 파일 추가
+        for filename in os.listdir(image_folder):
+            file_path = os.path.join(image_folder, filename)
+            if os.path.isfile(file_path):  # 파일인지 확인
+                zip_file.write(file_path, f'images/{filename}')
+            else:
+                logger.warning(f"Skipped non-file: {file_path}")
+    
+    # 버퍼 리셋
+    zip_buffer.seek(0)
+    
+    # HTTP 응답 설정
+    response = HttpResponse(FileWrapper(zip_buffer), content_type='application/zip')
+    response['Content-Disposition'] = f'attachment; filename="project_files_{document_id}.zip"'
+    
+    return response
