@@ -32,68 +32,77 @@ def extract_text_from_pdf(pdf_path):
         text += page.extract_text()
     return text
 
-def create_prompt(code_content, pdf_content, image_files):
+def create_prompt(code_content, pdf_content, image_files, title, description):
     code_summary = code_content[:500] + "..." if len(code_content) > 500 else code_content
     pdf_summary = pdf_content[:500] + "..." if len(pdf_content) > 500 else pdf_content
 
     image_descriptions = "\n".join([f"- {os.path.basename(img)}" for img in image_files])
-    prompt = f"""AI 어시스턴트로서, 제공된 소스 코드와 발표 자료를 바탕으로 GitHub README를 한국어로 작성해 주세요.
-    다음 섹션을 포함해 주세요: 프로젝트 설명, 주요 기능, 설치 가이드, 사용 예시, 테스트, 배포, 기여 방법, 라이선스, 감사의 말.
+    prompt = f"""As an AI assistant, please create a GitHub README in English based on the provided source code and presentation materials.
+    
+    Project Title: {title}
+    Project Description: {description}
+    
+    Please include the following sections: Project Description, Key Features, Installation Guide, Usage Examples, Testing, Deployment, How to Contribute, License, and Acknowledgments.
 
-    소스 코드 요약:
+    Source Code Summary:
     ```
     {code_summary}
     ```
 
-    발표 자료 요약:
+    Presentation Summary:
     {pdf_summary}
 
-    추출된 이미지 파일:
+    Extracted Image Files:
     {image_descriptions}
 
-    README 작성 시 다음 사항을 고려해 주세요:
-    1. **중요한 단어나 구문**은 볼드체로 강조해 주세요.
-    2. 각 섹션에 적절한 이모티콘을 사용하세요.
-    3. 다양한 Markdown 요소를 활용하여 가독성을 높여주세요.
-    4. 전문적이면서도 친근한 톤으로 작성해 주세요.
-    5. 이미지를 포함할 때는 다음 형식을 사용하세요: ![이미지 설명](images/이미지 파일명)
-    6. 이미지를 포함할 때는 해당 이미지가 어떤 내용을 나타내는지 간단히 설명해 주세요."""
+    Please consider the following when writing the README:
+    1. Use the provided project title for the README title.
+    2. Base the project description section on the provided description, supplemented with information from other sources.
+    3. Use **bold text** to emphasize important words or phrases.
+    4. Include appropriate emojis for each section.
+    5. Utilize various Markdown elements to enhance readability.
+    6. Write in a professional yet friendly tone.
+    7. When including images, use the following format: ![image description](images/image_filename)
+    8. When including images, briefly explain what each image represents."""
     return prompt
 
-def generate_readme(source_code, presentation_text, image_files):
+def generate_readme(source_code, presentation_text, image_files, project_title, project_description):
     client = OpenAI(api_key=settings.OPENAI_API_KEY)
     
-    prompt = create_prompt(source_code, presentation_text, image_files)
+    prompt = create_prompt(source_code, presentation_text, image_files, project_title, project_description)
     few_shot_examples = [
         {
             "role": "user",
-            "content": "Python 기반 데이터 분석 프로젝트를 위한 GitHub README를 작성해 주세요. 프로젝트 로고 이미지가 'images/logo.png'에 있습니다."
+            "content": "Please create a GitHub README for a Python-based data analysis project. The project logo is located at 'images/logo.png'."
         },
         {
             "role": "assistant",
-            "content": """# 📊 데이터 분석 도구
+            "content": """# 📊 Data Analysis Tool
 
-![프로젝트 로고](images/logo.png)
+## 🔍 Project Title
+Python data analysis project
+            
+![Project Logo](images/logo.png)
 
-## 🔍 프로젝트 설명
-이 프로젝트는 **대규모 데이터 집합**을 분석하고, **통계적 인사이트**를 도출하기 위해 설계된 Python 기반 데이터 분석 도구입니다.
+## 🔍 Project Description
+This project is a Python-based data analysis tool designed to analyze **large datasets** and derive **statistical insights**.
 
-## ✨ 주요 기능
-- 🧹 **데이터 처리**: 데이터 정리, 변환 및 필터링
-- 📈 **시각화**: 다양한 형식으로 그래프 생성
-- 🧮 **통계 분석**: 평균, 분산 등 기본 통계 계산
+## ✨ Key Features
+- 🧹 **Data Processing**: Clean, transform, and filter data
+- 📈 **Visualization**: Generate graphs in various formats
+- 🧮 **Statistical Analysis**: Calculate basic statistics including mean, variance, etc.
 
-## 🛠 설치 가이드
-1. 저장소를 복제합니다:
+## 🛠 Installation Guide
+1. Clone the repository:
    ```bash
    git clone https://github.com/username/data-analysis-tool.git
    ```
-2. 필요한 패키지를 설치합니다:
+2. Install required packages:
    ```bash
    pip install -r requirements.txt
    ```
 
-## 💻 사용 예시
+## 💻 Usage Example
 ```python
 from data_analysis_tool import DataAnalyzer
 
@@ -102,8 +111,8 @@ results = analyzer.analyze()
 analyzer.visualize(results, 'output.png')
 ```
 
-## 📄 라이선스
-이 프로젝트는 **MIT 라이선스** 하에 배포됩니다."""
+## 📄 License
+This project is distributed under the **MIT License**."""
         }
     ]
     messages = few_shot_examples + [{"role": "user", "content": prompt}]
@@ -140,6 +149,6 @@ def process_uploaded_files(document):
         raise ValueError("Unable to decode the source code file with any known encoding")
     
     # Generate README
-    readme_content = generate_readme(source_code, presentation_text, image_files)
-    
+    # README 생성 부분 수정
+    readme_content = generate_readme(source_code, presentation_text, image_files, document.project_title, document.project_description)    
     return readme_content

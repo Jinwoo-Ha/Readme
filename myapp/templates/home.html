@@ -116,6 +116,34 @@
             text-align: center;
             font-weight: bold;
         }
+        .input-container {
+        margin-bottom: 30px;
+        }
+        .input-field {
+            width: 100%;
+            padding: 15px;
+            border-radius: 10px;
+            background-color: rgba(30, 55, 153, 0.2);
+            border: 2px solid rgba(0, 255, 255, 0.1);
+            color: var(--text-color);
+            font-family: 'Roboto', sans-serif;
+            transition: all 0.3s ease;
+        }
+        .input-field:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+        }
+        textarea.input-field {
+            min-height: 100px;
+            resize: vertical;
+        }
+        .input-label {
+            display: block;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
@@ -125,6 +153,16 @@
         <div class="card">
             <form action="{% url 'home' %}" method="post" enctype="multipart/form-data">
                 {% csrf_token %}
+                <div class="input-container">
+                    <label for="project-title" class="input-label">Project Title</label>
+                    <input type="text" id="project-title" name="project_title" class="input-field" required>
+                </div>
+                
+                <div class="input-container">
+                    <label for="project-description" class="input-label">Project Description</label>
+                    <textarea id="project-description" name="project_description" class="input-field" required></textarea>
+                </div>
+
                 <div class="file-input-container">
                     <label for="source-code" class="file-input-label">Choose Source Code File</label>
                     <input type="file" id="source-code" name="source_code" required onchange="updateFileName(this, 'file-name-source')">

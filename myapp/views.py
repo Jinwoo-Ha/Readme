@@ -20,10 +20,14 @@ def home(request):
     if request.method == 'POST':
         source_code = request.FILES.get('source_code')
         presentation = request.FILES.get('presentation')
+        # 아래 두 줄 추가
+        project_title = request.POST.get('project_title')
+        project_description = request.POST.get('project_description')
         
-        if source_code and presentation:
+        # 조건문 수정
+        if source_code and presentation and project_title and project_description:
             try:
-                # Read and re-encode the source code file
+                # 기존 코드 유지
                 source_code_content = source_code.read()
                 try:
                     source_code_text = source_code_content.decode('utf-8')
@@ -33,22 +37,24 @@ def home(request):
                     except UnicodeDecodeError:
                         source_code_text = source_code_content.decode('euc-kr', errors='ignore')
                 
-                # Save the re-encoded content
+                # document 생성 부분 수정
                 document = Document()
                 document.source_code.save(source_code.name, ContentFile(source_code_text.encode('utf-8')), save=False)
                 document.presentation = presentation
+                # 아래 두 줄 추가
+                document.project_title = project_title
+                document.project_description = project_description
                 document.save()
                 
-                # Start the README generation in a separate thread
+                # 나머지 코드는 그대로 유지
                 threading.Thread(target=generate_readme, args=(document.id,)).start()
-                
                 return HttpResponseRedirect(reverse('loading') + f'?document_id={document.id}')
             except Exception as e:
                 logger.error(f"Error processing files: {str(e)}")
                 return render(request, 'home.html', {'error': str(e)})
         else:
-            logger.warning("Missing files in upload")
-            return render(request, 'home.html', {'error': 'Please upload both source code and presentation files.'})
+            logger.warning("Missing required fields")
+            return render(request, 'home.html', {'error': 'Please fill in all required fields.'})
     
     return render(request, 'home.html')
 

@@ -5,3 +5,6 @@ class Document(models.Model):
     presentation = models.FileField(upload_to='uploads/presentations/')
     readme = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
+
+    project_title = models.CharField(max_length=200, default='Untitled Project')
+    project_description = models.TextField(default='No description provided')
