@@ -5,7 +5,9 @@ from openai import OpenAI
 from django.conf import settings
 from django.core.files.base import ContentFile
 
-def extract_images_from_pdf(pdf_path, image_folder):
+def extract_images_from_pdf(pdf_path, document_id):
+    # 문서별 고유 이미지 폴더 생성
+    image_folder = os.path.join(settings.MEDIA_ROOT, f'images_{document_id}')
     os.makedirs(image_folder, exist_ok=True)
     
     pdf_document = fitz.open(pdf_path)
@@ -23,7 +25,7 @@ def extract_images_from_pdf(pdf_path, image_folder):
             with open(image_path, "wb") as image_file:
                 image_file.write(image_bytes)
             image_files.append(image_path)
-    return image_files
+    return image_files, image_folder
 
 def extract_text_from_pdf(pdf_path):
     pdf_reader = PdfReader(pdf_path)
@@ -129,8 +131,11 @@ This project is distributed under the **MIT License**."""
 def process_uploaded_files(document):
     # Extract images from PDF
     pdf_path = os.path.join(settings.MEDIA_ROOT, document.presentation.name)
-    image_folder = os.path.join(settings.MEDIA_ROOT, 'images')
-    image_files = extract_images_from_pdf(pdf_path, image_folder)
+    image_files, image_folder = extract_images_from_pdf(pdf_path, document.id)
+    
+    # 이미지 폴더 경로를 document에 저장
+    document.image_folder = f'images_{document.id}'
+    document.save()
     
     # Extract text from PDF
     presentation_text = extract_text_from_pdf(pdf_path)

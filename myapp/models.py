@@ -8,3 +8,6 @@ class Document(models.Model):
 
     project_title = models.CharField(max_length=200, default='Untitled Project')
     project_description = models.TextField(default='No description provided')
+
+    image_folder = models.CharField(max_length=255, blank=True)
+

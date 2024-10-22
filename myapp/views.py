@@ -85,7 +85,9 @@ def download_files(request, document_id):
     
     # ZIP 파일 생성
     zip_buffer = io.BytesIO()
-    image_folder = os.path.join(settings.MEDIA_ROOT, 'images')
+    
+    # 문서별 이미지 폴더 경로
+    image_folder = os.path.join(settings.MEDIA_ROOT, document.image_folder)
     
     if not os.path.exists(image_folder):
         logger.error(f"Image folder does not exist: {image_folder}")
@@ -99,6 +101,7 @@ def download_files(request, document_id):
         for filename in os.listdir(image_folder):
             file_path = os.path.join(image_folder, filename)
             if os.path.isfile(file_path):
+                # ZIP 내의 경로를 images/로 시작하도록 유지
                 zip_file.write(file_path, f'images/{filename}')
             else:
                 logger.warning(f"Skipped non-file: {file_path}")
