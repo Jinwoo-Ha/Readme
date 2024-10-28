@@ -13,6 +13,7 @@
             --text-color: #ffffff;
             --accent-color: #ff00ff;
         }
+        
         body, html {
             font-family: 'Roboto', sans-serif;
             background-color: var(--bg-color);
@@ -28,158 +29,218 @@
                 radial-gradient(circle at 90% 80%, rgba(255, 0, 255, 0.1) 0%, transparent 20%);
             background-attachment: fixed;
         }
+
         .container {
-            max-width: 1200px;
+            max-width: 800px;
             width: 95%;
             margin: 0 auto;
-            padding: 40px 20px;
+            padding: 15px;
         }
+
         h1 {
             font-family: 'Orbitron', sans-serif;
             color: var(--primary-color);
             text-transform: uppercase;
-            letter-spacing: 3px;
+            letter-spacing: 2px;
             text-align: center;
-            font-size: 4em;
-            margin-bottom: 40px;
-            text-shadow: 0 0 10px var(--primary-color), 0 0 20px var(--primary-color);
+            font-size: clamp(1.5em, 3.5vw, 2.7em);
+            margin-bottom: 25px;
+            text-shadow: 0 0 7px var(--primary-color), 0 0 14px var(--primary-color);
         }
+
         .card {
             background-color: rgba(30, 55, 153, 0.2);
-            border-radius: 20px;
-            padding: 40px;
-            margin-bottom: 40px;
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
-            backdrop-filter: blur(10px);
-            border: 2px solid rgba(0, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: clamp(15px, 3vw, 25px);
+            margin-bottom: 25px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(7px);
+            border: 1.5px solid rgba(0, 255, 255, 0.1);
             transition: all 0.3s ease;
         }
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+
+        @media (hover: hover) {
+            .card:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+            }
         }
+
         form {
             display: flex;
             flex-direction: column;
-            gap: 30px;
+            gap: clamp(15px, 2vw, 20px);
         }
+
         .file-input-container {
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 7px;
         }
+
         .file-input-label {
             background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
             color: var(--bg-color);
-            padding: 15px 30px;
-            border-radius: 50px;
+            padding: clamp(8px, 1.5vw, 10px) clamp(15px, 3vw, 20px);
+            border-radius: 25px;
             cursor: pointer;
             display: inline-block;
             font-weight: bold;
             transition: all 0.3s ease;
+            text-align: center;
+            font-size: clamp(12px, 1.5vw, 14px);
         }
-        .file-input-label:hover {
-            transform: translateY(-3px) scale(1.05);
-            box-shadow: 0 10px 20px rgba(0, 255, 255, 0.3);
+
+        @media (hover: hover) {
+            .file-input-label:hover {
+                transform: translateY(-2px) scale(1.03);
+                box-shadow: 0 7px 14px rgba(0, 255, 255, 0.3);
+            }
+
+            button:hover {
+                transform: translateY(-2px) scale(1.03);
+                box-shadow: 0 10px 20px rgba(0, 255, 255, 0.4);
+            }
         }
+
         input[type="file"] {
             display: none;
         }
-        #file-name-source, #file-name-presentation {
-            margin-top: 10px;
-            color: var(--primary-color);
-        }
+
         button {
             background: linear-gradient(45deg, var(--primary-color), var(--accent-color));
             color: var(--bg-color);
             border: none;
-            padding: 20px 40px;
+            padding: clamp(10px, 2vw, 15px) clamp(20px, 3.5vw, 30px);
             cursor: pointer;
-            border-radius: 50px;
+            border-radius: 25px;
             font-weight: bold;
-            font-size: 1.2em;
+            font-size: clamp(0.8em, 1.5vw, 1em);
             text-transform: uppercase;
-            letter-spacing: 2px;
+            letter-spacing: 1.5px;
             transition: all 0.3s ease;
-            box-shadow: 0 10px 20px rgba(0, 255, 255, 0.3);
+            box-shadow: 0 7px 14px rgba(0, 255, 255, 0.3);
+            width: fit-content;
+            margin: 0 auto;
         }
-        button:hover {
-            transform: translateY(-3px) scale(1.05);
-            box-shadow: 0 15px 30px rgba(0, 255, 255, 0.4);
-        }
+
         .error {
             color: var(--accent-color);
             background-color: rgba(255, 0, 255, 0.1);
-            padding: 15px;
-            border-radius: 10px;
-            margin-top: 20px;
+            padding: 10px;
+            border-radius: 7px;
+            margin-top: 15px;
             text-align: center;
             font-weight: bold;
+            font-size: clamp(11px, 1.5vw, 13px);
         }
+
         .input-container {
-        margin-bottom: 30px;
+            margin-bottom: clamp(15px, 2vw, 20px);
         }
+
         .input-field {
             width: 100%;
-            padding: 15px;
-            border-radius: 10px;
+            padding: clamp(8px, 1.5vw, 10px);
+            border-radius: 7px;
             background-color: rgba(30, 55, 153, 0.2);
-            border: 2px solid rgba(0, 255, 255, 0.1);
+            border: 1.5px solid rgba(0, 255, 255, 0.1);
             color: var(--text-color);
             font-family: 'Roboto', sans-serif;
             transition: all 0.3s ease;
+            font-size: clamp(12px, 1.5vw, 14px);
+            box-sizing: border-box;
         }
+
         .input-field:focus {
             outline: none;
             border-color: var(--primary-color);
-            box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+            box-shadow: 0 0 7px rgba(0, 255, 255, 0.3);
         }
+
         textarea.input-field {
-            min-height: 100px;
+            min-height: clamp(60px, 10vw, 80px);
             resize: vertical;
         }
+
         .input-label {
             display: block;
             color: var(--primary-color);
-            margin-bottom: 10px;
+            margin-bottom: 7px;
             font-weight: bold;
+            font-size: clamp(12px, 1.5vw, 14px);
         }
+
         .file-list {
-            margin-top: 10px;
-            padding: 10px;
-            border-radius: 10px;
+            margin-top: 7px;
+            padding: 7px;
+            border-radius: 7px;
             background-color: rgba(30, 55, 153, 0.1);
         }
         
         .file-item {
-            display: flex;
-            justify-content: space-between;
+            display: grid;
+            grid-template-columns: 1fr auto;
             align-items: center;
-            padding: 5px 10px;
-            margin: 5px 0;
+            padding: 3px 7px;
+            margin: 3px 0;
             background-color: rgba(0, 255, 255, 0.1);
-            border-radius: 5px;
+            border-radius: 3px;
+            font-size: clamp(11px, 1.3vw, 13px);
+            gap: 10px;
         }
-        
+
+        .file-item span {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
         .remove-file {
             color: var(--accent-color);
             cursor: pointer;
-            padding: 2px 8px;
+            padding: 1px 6px;
             border-radius: 50%;
             background-color: rgba(255, 0, 255, 0.1);
             border: none;
+            flex-shrink: 0;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         
-        .remove-file:hover {
-            background-color: rgba(255, 0, 255, 0.3);
+        @media (hover: hover) {
+            .remove-file:hover {
+                background-color: rgba(255, 0, 255, 0.3);
+            }
         }
-        
-        .add-more-files {
-            margin-top: 10px;
-            color: var(--primary-color);
-            font-size: 0.9em;
-            cursor: pointer;
-            text-decoration: underline;
+
+        /* 모바일 디바이스를 위한 미디어 쿼리 */
+        @media screen and (max-width: 480px) {
+            .container {
+                width: 92%;
+                padding: 10px;
+            }
+
+            .card {
+                padding: 12px;
+            }
+        }
+
+        /* 태블릿을 위한 미디어 쿼리 */
+        @media screen and (min-width: 481px) and (max-width: 768px) {
+            .container {
+                width: 85%;
+            }
+        }
+
+        /* 작은 노트북 화면을 위한 미디어 쿼리 */
+        @media screen and (min-width: 769px) and (max-width: 1024px) {
+            .container {
+                width: 80%;
+            }
         }
     </style>
 </head>
@@ -228,27 +289,21 @@
         let presentationFiles = new DataTransfer();
 
         function handleFileSelect(input, listId) {
-            // 파일 목록 관리를 위한 DataTransfer 객체 선택
             const fileStorage = input.id === 'source-code' ? sourceCodeFiles : presentationFiles;
             const newFiles = input.files;
             
-            // 새로 선택된 파일들을 기존 파일 목록에 추가
             Array.from(newFiles).forEach(file => {
                 fileStorage.items.add(file);
             });
             
-            // input의 files를 업데이트
             input.files = fileStorage.files;
             
-            // UI 업데이트
             updateFileList(input, document.getElementById(listId));
         }
 
         function updateFileList(input, fileList) {
-            // 기존 목록 초기화
             fileList.innerHTML = '';
             
-            // 현재 선택된 모든 파일 표시
             Array.from(input.files).forEach((file, index) => {
                 const fileItem = document.createElement('div');
                 fileItem.className = 'file-item';
@@ -265,22 +320,18 @@
             const fileStorage = inputId === 'source-code' ? sourceCodeFiles : presentationFiles;
             const dt = new DataTransfer();
             
-            // 선택된 파일을 제외한 나머지 파일들을 새로운 DataTransfer 객체에 추가
             Array.from(input.files)
                 .filter((_, i) => i !== index)
                 .forEach(file => dt.items.add(file));
             
-            // 파일 스토리지 업데이트
             if (inputId === 'source-code') {
                 sourceCodeFiles = dt;
             } else {
                 presentationFiles = dt;
             }
             
-            // input의 files 업데이트
             input.files = dt.files;
             
-            // UI 업데이트
             updateFileList(input, document.getElementById(listId));
         }
     </script>

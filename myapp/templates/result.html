@@ -13,6 +13,7 @@
             --text-color: #ffffff;
             --accent-color: #ff00ff;
         }
+
         body, html {
             font-family: 'Roboto', sans-serif;
             background-color: var(--bg-color);
@@ -27,68 +28,117 @@
                 radial-gradient(circle at 90% 80%, rgba(255, 0, 255, 0.1) 0%, transparent 20%);
             background-attachment: fixed;
         }
+
         .container {
-            max-width: 1200px;
+            max-width: 800px;
             width: 95%;
-            margin: 40px auto;
-            padding: 40px 20px;
+            margin: clamp(20px, 4vw, 40px) auto;
+            padding: clamp(20px, 3vw, 40px) clamp(10px, 2vw, 20px);
         }
+
         h1, h2 {
             font-family: 'Orbitron', sans-serif;
             color: var(--primary-color);
             text-transform: uppercase;
-            letter-spacing: 3px;
+            letter-spacing: clamp(1.5px, 0.3vw, 3px);
             text-align: center;
         }
+
         h1 {
-            font-size: 3em;
-            margin-bottom: 30px;
-            text-shadow: 0 0 10px var(--primary-color), 0 0 20px var(--primary-color);
+            font-size: clamp(1.8em, 4vw, 2.7em);
+            margin-bottom: clamp(15px, 3vw, 30px);
+            text-shadow: 0 0 7px var(--primary-color), 0 0 14px var(--primary-color);
         }
+
         h2 {
-            font-size: 2em;
+            font-size: clamp(1.3em, 3vw, 2em);
             color: var(--accent-color);
-            margin-top: 40px;
+            margin-top: clamp(20px, 4vw, 40px);
         }
+
         .readme {
             background-color: rgba(30, 55, 153, 0.2);
-            border-radius: 20px;
-            padding: 30px;
-            margin-bottom: 40px;
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
-            backdrop-filter: blur(10px);
-            border: 2px solid rgba(0, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: clamp(15px, 3vw, 30px);
+            margin-bottom: clamp(20px, 4vw, 40px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(7px);
+            border: 1.5px solid rgba(0, 255, 255, 0.1);
             white-space: pre-wrap;
             word-wrap: break-word;
             font-family: 'Courier New', monospace;
-            font-size: 1.1em;
+            font-size: clamp(0.9em, 1.8vw, 1.1em);
             line-height: 1.6;
+            overflow-x: auto;
         }
+
         .btn-container {
             display: flex;
-            gap: 20px;
+            gap: clamp(10px, 2vw, 20px);
             justify-content: center;
-            margin-top: 30px;
+            margin-top: clamp(15px, 3vw, 30px);
+            flex-wrap: wrap;
         }
+
         .btn {
             background: linear-gradient(45deg, var(--primary-color), var(--accent-color));
             color: var(--bg-color);
             border: none;
-            padding: 15px 30px;
+            padding: clamp(10px, 2vw, 15px) clamp(20px, 3vw, 30px);
             cursor: pointer;
-            border-radius: 50px;
+            border-radius: 25px;
             font-weight: bold;
-            font-size: 1em;
+            font-size: clamp(0.8em, 1.5vw, 1em);
             text-transform: uppercase;
-            letter-spacing: 2px;
+            letter-spacing: clamp(1px, 0.2vw, 2px);
             transition: all 0.3s ease;
-            box-shadow: 0 10px 20px rgba(0, 255, 255, 0.3);
+            box-shadow: 0 7px 14px rgba(0, 255, 255, 0.3);
             text-decoration: none;
             display: inline-block;
+            text-align: center;
+            min-width: clamp(120px, 20vw, 160px);
         }
-        .btn:hover {
-            transform: translateY(-3px) scale(1.05);
-            box-shadow: 0 15px 30px rgba(0, 255, 255, 0.4);
+
+        @media (hover: hover) {
+            .btn:hover {
+                transform: translateY(-2px) scale(1.03);
+                box-shadow: 0 10px 20px rgba(0, 255, 255, 0.4);
+            }
+        }
+
+        /* 모바일 디바이스를 위한 미디어 쿼리 */
+        @media screen and (max-width: 480px) {
+            .container {
+                width: 92%;
+                padding: 15px 10px;
+            }
+
+            .btn-container {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+
+        /* 태블릿을 위한 미디어 쿼리 */
+        @media screen and (min-width: 481px) and (max-width: 768px) {
+            .container {
+                width: 85%;
+            }
+            
+            .btn-container {
+                gap: 15px;
+            }
+        }
+
+        /* 작은 노트북 화면을 위한 미디어 쿼리 */
+        @media screen and (min-width: 769px) and (max-width: 1024px) {
+            .container {
+                width: 80%;
+            }
         }
     </style>
 </head>
