@@ -11,7 +11,6 @@ import os
 from django.conf import settings
 from django.urls import reverse
 import threading
-
 import logging
 
 logger = logging.getLogger(__name__)
@@ -87,24 +86,24 @@ def download_files(request, document_id):
     zip_buffer = io.BytesIO()
     
     # 문서별 이미지 폴더 경로
-    image_folder = os.path.join(settings.MEDIA_ROOT, document.image_folder)
+    # image_folder = os.path.join(settings.MEDIA_ROOT, document.image_folder)
     
-    if not os.path.exists(image_folder):
-        logger.error(f"Image folder does not exist: {image_folder}")
-        return HttpResponse('Image folder does not exist', status=400)
+    # if not os.path.exists(image_folder):
+    #     logger.error(f"Image folder does not exist: {image_folder}")
+    #     return HttpResponse('Image folder does not exist', status=400)
     
     with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED) as zip_file:
         # README 추가
         zip_file.writestr('README.md', document.readme)
         
-        # 이미지 파일 추가
-        for filename in os.listdir(image_folder):
-            file_path = os.path.join(image_folder, filename)
-            if os.path.isfile(file_path):
-                # ZIP 내의 경로를 images/로 시작하도록 유지
-                zip_file.write(file_path, f'images/{filename}')
-            else:
-                logger.warning(f"Skipped non-file: {file_path}")
+        # # 이미지 파일 추가
+        # for filename in os.listdir(image_folder):
+        #     file_path = os.path.join(image_folder, filename)
+        #     if os.path.isfile(file_path):
+        #         # ZIP 내의 경로를 images/로 시작하도록 유지
+        #         zip_file.write(file_path, f'images/{filename}')
+        #     else:
+        #         logger.warning(f"Skipped non-file: {file_path}")
     
     # 버퍼 리셋
     zip_buffer.seek(0)
