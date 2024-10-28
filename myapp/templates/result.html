@@ -78,6 +78,7 @@
             justify-content: center;
             margin-top: clamp(15px, 3vw, 30px);
             flex-wrap: wrap;
+            width: 100%;
         }
 
         .btn {
@@ -94,9 +95,12 @@
             transition: all 0.3s ease;
             box-shadow: 0 7px 14px rgba(0, 255, 255, 0.3);
             text-decoration: none;
-            display: inline-block;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             text-align: center;
             min-width: clamp(120px, 20vw, 160px);
+            width: auto;
         }
 
         @media (hover: hover) {
@@ -115,11 +119,35 @@
 
             .btn-container {
                 flex-direction: column;
-                align-items: stretch;
+                align-items: center;
+                gap: 15px;
+                padding: 0 20px;
+                max-width: 400px;
+                margin-left: auto;
+                margin-right: auto;
             }
 
             .btn {
                 width: 100%;
+                max-width: 300px;
+                margin: 0;
+                height: 45px;
+                font-size: 0.9em;
+                padding: 10px 20px;
+                border-radius: 50px;
+            }
+        }
+        
+        /* 작은 모바일 디바이스를 위한 미디어 쿼리 */
+        @media screen and (max-width: 320px) {
+            .btn-container {
+                padding: 0 10px;
+            }
+
+            .btn {
+                font-size: 0.8em;
+                padding: 8px 16px;
+                height: 40px;
             }
         }
 
