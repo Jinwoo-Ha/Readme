@@ -77,7 +77,6 @@
             gap: clamp(10px, 2vw, 20px);
             justify-content: center;
             margin-top: clamp(15px, 3vw, 30px);
-            flex-wrap: wrap;
             width: 100%;
         }
 
@@ -87,7 +86,7 @@
             border: none;
             padding: clamp(10px, 2vw, 15px) clamp(20px, 3vw, 30px);
             cursor: pointer;
-            border-radius: 25px;
+            border-radius: 50px;
             font-weight: bold;
             font-size: clamp(0.8em, 1.5vw, 1em);
             text-transform: uppercase;
@@ -95,11 +94,7 @@
             transition: all 0.3s ease;
             box-shadow: 0 7px 14px rgba(0, 255, 255, 0.3);
             text-decoration: none;
-            display: flex;
-            align-items: center;
-            justify-content: center;
             text-align: center;
-            min-width: clamp(120px, 20vw, 160px);
             width: auto;
         }
 
@@ -120,34 +115,27 @@
             .btn-container {
                 flex-direction: column;
                 align-items: center;
-                gap: 15px;
-                padding: 0 20px;
-                max-width: 400px;
-                margin-left: auto;
-                margin-right: auto;
+                gap: 12px;
+                width: 100%;
             }
 
             .btn {
-                width: 100%;
-                max-width: 300px;
-                margin: 0;
-                height: 45px;
-                font-size: 0.9em;
-                padding: 10px 20px;
-                border-radius: 50px;
+                width: 90%;
+                height: 48px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 0;
+                font-size: 14px;
             }
         }
-        
+
         /* 작은 모바일 디바이스를 위한 미디어 쿼리 */
         @media screen and (max-width: 320px) {
-            .btn-container {
-                padding: 0 10px;
-            }
-
             .btn {
-                font-size: 0.8em;
-                padding: 8px 16px;
-                height: 40px;
+                width: 95%;
+                height: 44px;
+                font-size: 13px;
             }
         }
 
