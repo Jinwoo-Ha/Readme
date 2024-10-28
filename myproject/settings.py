@@ -31,7 +31,7 @@ SECRET_KEY = 'django-insecure-4sigygyc8l(a1^!28s5^4ez9*&_=(4sboy95l3nkqgwlv7u0#s
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -124,6 +124,13 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "static"),
+]
+
+# Railway용 추가
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
@@ -133,3 +140,5 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
+
+CSRF_TRUSTED_ORIGINS = ['https://last-production-7612.up.railway.app']
