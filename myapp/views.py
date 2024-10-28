@@ -12,42 +12,53 @@ from django.conf import settings
 from django.urls import reverse
 import threading
 import logging
+from .models import Document, SourceCode, Presentation
+
 
 logger = logging.getLogger(__name__)
 
 def home(request):
     if request.method == 'POST':
-        source_code = request.FILES.get('source_code')
-        presentation = request.FILES.get('presentation')
-        # 아래 두 줄 추가
+        source_codes = request.FILES.getlist('source_code')
+        presentations = request.FILES.getlist('presentation')
         project_title = request.POST.get('project_title')
         project_description = request.POST.get('project_description')
         
-        # 조건문 수정
-        if source_code and presentation and project_title and project_description:
+        if source_codes and presentations and project_title and project_description:
             try:
-                # 기존 코드 유지
-                source_code_content = source_code.read()
-                try:
-                    source_code_text = source_code_content.decode('utf-8')
-                except UnicodeDecodeError:
+                # 메인 Document 객체 생성
+                document = Document.objects.create(
+                    project_title=project_title,
+                    project_description=project_description
+                )
+                
+                # 소스 코드 파일들 처리
+                for source_code in source_codes:
+                    source_code_content = source_code.read()
                     try:
-                        source_code_text = source_code_content.decode('cp949')
+                        source_code_text = source_code_content.decode('utf-8')
                     except UnicodeDecodeError:
-                        source_code_text = source_code_content.decode('euc-kr', errors='ignore')
+                        try:
+                            source_code_text = source_code_content.decode('cp949')
+                        except UnicodeDecodeError:
+                            source_code_text = source_code_content.decode('euc-kr', errors='ignore')
+                    
+                    # 소스 코드 파일 저장
+                    SourceCode.objects.create(
+                        document=document,
+                        file=ContentFile(source_code_text.encode('utf-8'), name=source_code.name)
+                    )
                 
-                # document 생성 부분 수정
-                document = Document()
-                document.source_code.save(source_code.name, ContentFile(source_code_text.encode('utf-8')), save=False)
-                document.presentation = presentation
-                # 아래 두 줄 추가
-                document.project_title = project_title
-                document.project_description = project_description
-                document.save()
+                # 프레젠테이션 파일들 처리
+                for presentation in presentations:
+                    Presentation.objects.create(
+                        document=document,
+                        file=presentation
+                    )
                 
-                # 나머지 코드는 그대로 유지
                 threading.Thread(target=generate_readme, args=(document.id,)).start()
                 return HttpResponseRedirect(reverse('loading') + f'?document_id={document.id}')
+            
             except Exception as e:
                 logger.error(f"Error processing files: {str(e)}")
                 return render(request, 'home.html', {'error': str(e)})
@@ -85,25 +96,21 @@ def download_files(request, document_id):
     # ZIP 파일 생성
     zip_buffer = io.BytesIO()
     
-    # 문서별 이미지 폴더 경로
-    # image_folder = os.path.join(settings.MEDIA_ROOT, document.image_folder)
-    
-    # if not os.path.exists(image_folder):
-    #     logger.error(f"Image folder does not exist: {image_folder}")
-    #     return HttpResponse('Image folder does not exist', status=400)
-    
     with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED) as zip_file:
         # README 추가
         zip_file.writestr('README.md', document.readme)
         
-        # # 이미지 파일 추가
-        # for filename in os.listdir(image_folder):
-        #     file_path = os.path.join(image_folder, filename)
-        #     if os.path.isfile(file_path):
-        #         # ZIP 내의 경로를 images/로 시작하도록 유지
-        #         zip_file.write(file_path, f'images/{filename}')
-        #     else:
-        #         logger.warning(f"Skipped non-file: {file_path}")
+        # 소스 코드 파일들 추가
+        for source_code in document.source_codes.all():
+            file_path = os.path.join(settings.MEDIA_ROOT, source_code.file.name)
+            if os.path.exists(file_path):
+                zip_file.write(file_path, f'source_code/{os.path.basename(source_code.file.name)}')
+        
+        # 프레젠테이션 파일들 추가
+        for presentation in document.presentations.all():
+            file_path = os.path.join(settings.MEDIA_ROOT, presentation.file.name)
+            if os.path.exists(file_path):
+                zip_file.write(file_path, f'presentations/{os.path.basename(presentation.file.name)}')
     
     # 버퍼 리셋
     zip_buffer.seek(0)

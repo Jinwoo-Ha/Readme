@@ -144,6 +144,43 @@
             margin-bottom: 10px;
             font-weight: bold;
         }
+        .file-list {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 10px;
+            background-color: rgba(30, 55, 153, 0.1);
+        }
+        
+        .file-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 5px 10px;
+            margin: 5px 0;
+            background-color: rgba(0, 255, 255, 0.1);
+            border-radius: 5px;
+        }
+        
+        .remove-file {
+            color: var(--accent-color);
+            cursor: pointer;
+            padding: 2px 8px;
+            border-radius: 50%;
+            background-color: rgba(255, 0, 255, 0.1);
+            border: none;
+        }
+        
+        .remove-file:hover {
+            background-color: rgba(255, 0, 255, 0.3);
+        }
+        
+        .add-more-files {
+            margin-top: 10px;
+            color: var(--primary-color);
+            font-size: 0.9em;
+            cursor: pointer;
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body>
@@ -164,15 +201,17 @@
                 </div>
 
                 <div class="file-input-container">
-                    <label for="source-code" class="file-input-label">Choose Source Code File</label>
-                    <input type="file" id="source-code" name="source_code" required onchange="updateFileName(this, 'file-name-source')">
-                    <div id="file-name-source">No file chosen</div>
+                    <label for="source-code" class="file-input-label">Choose Source Code Files</label>
+                    <input type="file" id="source-code" name="source_code" multiple onchange="handleFileSelect(this, 'source-code-list')">
+                    <div id="source-code-list" class="file-list"></div>
                 </div>
+
                 <div class="file-input-container">
-                    <label for="presentation" class="file-input-label">Choose Presentation File (PDF)</label>
-                    <input type="file" id="presentation" name="presentation" accept=".pdf" required onchange="updateFileName(this, 'file-name-presentation')">
-                    <div id="file-name-presentation">No file chosen</div>
+                    <label for="presentation" class="file-input-label">Choose Presentation Files (PDF)</label>
+                    <input type="file" id="presentation" name="presentation" accept=".pdf" multiple onchange="handleFileSelect(this, 'presentation-list')">
+                    <div id="presentation-list" class="file-list"></div>
                 </div>
+
                 <button type="submit">Generate README</button>
             </form>
         </div>
@@ -185,9 +224,64 @@
     </div>
 
     <script>
-        function updateFileName(input, outputId) {
-            const fileName = input.files[0]?.name || 'No file chosen';
-            document.getElementById(outputId).textContent = fileName;
+        let sourceCodeFiles = new DataTransfer();
+        let presentationFiles = new DataTransfer();
+
+        function handleFileSelect(input, listId) {
+            // 파일 목록 관리를 위한 DataTransfer 객체 선택
+            const fileStorage = input.id === 'source-code' ? sourceCodeFiles : presentationFiles;
+            const newFiles = input.files;
+            
+            // 새로 선택된 파일들을 기존 파일 목록에 추가
+            Array.from(newFiles).forEach(file => {
+                fileStorage.items.add(file);
+            });
+            
+            // input의 files를 업데이트
+            input.files = fileStorage.files;
+            
+            // UI 업데이트
+            updateFileList(input, document.getElementById(listId));
+        }
+
+        function updateFileList(input, fileList) {
+            // 기존 목록 초기화
+            fileList.innerHTML = '';
+            
+            // 현재 선택된 모든 파일 표시
+            Array.from(input.files).forEach((file, index) => {
+                const fileItem = document.createElement('div');
+                fileItem.className = 'file-item';
+                fileItem.innerHTML = `
+                    <span>${file.name}</span>
+                    <button type="button" class="remove-file" onclick="removeFile(${index}, '${input.id}', '${fileList.id}')">×</button>
+                `;
+                fileList.appendChild(fileItem);
+            });
+        }
+
+        function removeFile(index, inputId, listId) {
+            const input = document.getElementById(inputId);
+            const fileStorage = inputId === 'source-code' ? sourceCodeFiles : presentationFiles;
+            const dt = new DataTransfer();
+            
+            // 선택된 파일을 제외한 나머지 파일들을 새로운 DataTransfer 객체에 추가
+            Array.from(input.files)
+                .filter((_, i) => i !== index)
+                .forEach(file => dt.items.add(file));
+            
+            // 파일 스토리지 업데이트
+            if (inputId === 'source-code') {
+                sourceCodeFiles = dt;
+            } else {
+                presentationFiles = dt;
+            }
+            
+            // input의 files 업데이트
+            input.files = dt.files;
+            
+            // UI 업데이트
+            updateFileList(input, document.getElementById(listId));
         }
     </script>
 </body>

@@ -1,31 +1,8 @@
 import os
 from PyPDF2 import PdfReader
-# import fitz  # PyMuPDF
 from openai import OpenAI
 from django.conf import settings
 from django.core.files.base import ContentFile
-
-# def extract_images_from_pdf(pdf_path, document_id):
-#     # 문서별 고유 이미지 폴더 생성
-#     image_folder = os.path.join(settings.MEDIA_ROOT, f'images_{document_id}')
-#     os.makedirs(image_folder, exist_ok=True)
-    
-#     pdf_document = fitz.open(pdf_path)
-#     image_files = []
-#     for page_num in range(len(pdf_document)):
-#         page = pdf_document[page_num]
-#         image_list = page.get_images()
-#         for img_index, img in enumerate(image_list):
-#             xref = img[0]
-#             base_image = pdf_document.extract_image(xref)
-#             image_bytes = base_image["image"]
-#             image_ext = base_image["ext"]
-#             image_name = f"image_{page_num+1}_{img_index+1}.{image_ext}"
-#             image_path = os.path.join(image_folder, image_name)
-#             with open(image_path, "wb") as image_file:
-#                 image_file.write(image_bytes)
-#             image_files.append(image_path)
-#     return image_files, image_folder
 
 def extract_text_from_pdf(pdf_path):
     pdf_reader = PdfReader(pdf_path)
@@ -34,11 +11,19 @@ def extract_text_from_pdf(pdf_path):
         text += page.extract_text()
     return text
 
-def create_prompt(code_content, pdf_content, title, description):
-    code_summary = code_content[:500] + "..." if len(code_content) > 500 else code_content
-    pdf_summary = pdf_content[:500] + "..." if len(pdf_content) > 500 else pdf_content
+def create_prompt(code_contents, pdf_contents, title, description):
+    # Combine all code contents with markers
+    combined_code = ""
+    for i, code in enumerate(code_contents, 1):
+        code_summary = code[:500] + "..." if len(code) > 500 else code
+        combined_code += f"\nSource Code File {i}:\n```\n{code_summary}\n```\n"
 
-    # image_descriptions = "\n".join([f"- {os.path.basename(img)}" for img in image_files])
+    # Combine all PDF contents with markers
+    combined_pdf = ""
+    for i, pdf in enumerate(pdf_contents, 1):
+        pdf_summary = pdf[:500] + "..." if len(pdf) > 500 else pdf
+        combined_pdf += f"\nPresentation File {i}:\n{pdf_summary}\n"
+
     prompt = f"""As an AI assistant, please create a GitHub README in English based on the provided source code and presentation materials.
     
     Project Title: {title}
@@ -47,13 +32,10 @@ def create_prompt(code_content, pdf_content, title, description):
     Please include the following sections: Project Description, Key Features, Installation Guide, Usage Examples, Testing, Deployment, How to Contribute, License, and Acknowledgments.
 
     Source Code Summary:
-    ```
-    {code_summary}
-    ```
+    {combined_code}
 
     Presentation Summary:
-    {pdf_summary}
-
+    {combined_pdf}
 
     Please consider the following when writing the README:
     0. Follow the EXACT structure provided below
@@ -63,15 +45,15 @@ def create_prompt(code_content, pdf_content, title, description):
     4. Include appropriate emojis for each section.
     5. Utilize various Markdown elements to enhance readability.
     6. Write in a professional yet friendly tone.
-    7. Don't include Deployment and Testing 
+    7. Don't include Deployment, License, Usage Example and Testing 
+    8. Follow the EXACT Installation guide
     """
     return prompt
 
-def generate_readme(source_code, presentation_text, project_title, project_description):    
-    # image_files 인자 제거
+def generate_readme(source_codes, presentation_texts, project_title, project_description):    
     client = OpenAI(api_key=settings.OPENAI_API_KEY)
     
-    prompt = create_prompt(source_code, presentation_text, project_title, project_description)
+    prompt = create_prompt(source_codes, presentation_texts, project_title, project_description)
     few_shot_examples = [
         {
             "role": "user",
@@ -95,7 +77,7 @@ This project is a Python-based data analysis tool designed to analyze **large da
 ## 🛠 Installation Guide
 1. Clone the repository:
    ```bash
-   git clone https://github.com/username/data-analysis-tool.git
+   git clone {github repository url}
    ```
 2. Install required packages:
    ```bash
@@ -105,14 +87,14 @@ This project is a Python-based data analysis tool designed to analyze **large da
 ## 💻 Usage Example
 ```python
 from data_analysis_tool import DataAnalyzer
-
 analyzer = DataAnalyzer('data.csv')
 results = analyzer.analyze()
 analyzer.visualize(results, 'output.png')
 ```
 
-## 📄 License
-This project is distributed under the **MIT License**."""
+## 🎉 Acknowledgments
+A big thank you to Korea University and all the developers who worked on this project. Special thanks to Upstage LLM Innovators Challenge for providing a platform for this innovative project.
+"""
         }
     ]
     messages = few_shot_examples + [{"role": "user", "content": prompt}]
@@ -127,32 +109,30 @@ This project is distributed under the **MIT License**."""
     return response.choices[0].message.content
 
 def process_uploaded_files(document):
-    # Extract images from PDF
-    pdf_path = os.path.join(settings.MEDIA_ROOT, document.presentation.name)
-    # image_files, image_folder = extract_images_from_pdf(pdf_path, document.id)
+    source_codes = []
+    presentation_texts = []
     
-    # 이미지 폴더 경로를 document에 저장
-    # document.image_folder = f'images_{document.id}'
-    # document.save()
+    # Process source code files
+    for source_code_file in document.source_codes.all():
+        source_code_path = os.path.join(settings.MEDIA_ROOT, source_code_file.file.name)
+        encodings = ['utf-8', 'cp949', 'euc-kr']
+        for encoding in encodings:
+            try:
+                with open(source_code_path, 'r', encoding=encoding) as file:
+                    source_code = file.read()
+                source_codes.append(source_code)
+                break
+            except UnicodeDecodeError:
+                continue
+        else:
+            raise ValueError(f"Unable to decode the source code file {source_code_file.file.name} with any known encoding")
     
-    # Extract text from PDF
-    presentation_text = extract_text_from_pdf(pdf_path)
-    
-    # Read source code
-    source_code_path = os.path.join(settings.MEDIA_ROOT, document.source_code.name)
-    encodings = ['utf-8', 'cp949', 'euc-kr']
-    for encoding in encodings:
-        try:
-            with open(source_code_path, 'r', encoding=encoding) as file:
-                source_code = file.read()
-            break
-        except UnicodeDecodeError:
-            continue
-    else:
-        raise ValueError("Unable to decode the source code file with any known encoding")
+    # Process presentation files
+    for presentation_file in document.presentations.all():
+        pdf_path = os.path.join(settings.MEDIA_ROOT, presentation_file.file.name)
+        presentation_text = extract_text_from_pdf(pdf_path)
+        presentation_texts.append(presentation_text)
     
     # Generate README
-    # README 생성 부분 수정
-    readme_content = generate_readme(source_code, presentation_text, document.project_title, document.project_description)    
-    # image_files 인자 위에서 제거
+    readme_content = generate_readme(source_codes, presentation_texts, document.project_title, document.project_description)    
     return readme_content
