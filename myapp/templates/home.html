@@ -217,7 +217,11 @@
             }
         }
 
-        /* 모바일 디바이스를 위한 미디어 쿼리 */
+        .required-field::after {
+            content: " *";
+            color: var(--accent-color);
+        }
+
         @media screen and (max-width: 480px) {
             .container {
                 width: 92%;
@@ -229,14 +233,12 @@
             }
         }
 
-        /* 태블릿을 위한 미디어 쿼리 */
         @media screen and (min-width: 481px) and (max-width: 768px) {
             .container {
                 width: 85%;
             }
         }
 
-        /* 작은 노트북 화면을 위한 미디어 쿼리 */
         @media screen and (min-width: 769px) and (max-width: 1024px) {
             .container {
                 width: 80%;
@@ -252,24 +254,27 @@
             <form action="{% url 'home' %}" method="post" enctype="multipart/form-data">
                 {% csrf_token %}
                 <div class="input-container">
-                    <label for="project-title" class="input-label">Project Title</label>
-                    <input type="text" id="project-title" name="project_title" class="input-field" required>
+                    <label for="project-title" class="input-label required-field">Project Title</label>
+                    <input type="text" id="project-title" name="project_title" class="input-field" required
+                           value="{{ previous_data.project_title|default:'' }}">
                 </div>
                 
                 <div class="input-container">
-                    <label for="project-description" class="input-label">Project Description</label>
-                    <textarea id="project-description" name="project_description" class="input-field" required></textarea>
+                    <label for="project-description" class="input-label required-field">Project Description</label>
+                    <textarea id="project-description" name="project_description" class="input-field" required>{{ previous_data.project_description|default:'' }}</textarea>
                 </div>
 
                 <div class="file-input-container">
-                    <label for="source-code" class="file-input-label">Choose Source Code Files</label>
-                    <input type="file" id="source-code" name="source_code" multiple onchange="handleFileSelect(this, 'source-code-list')">
+                    <label for="source-code" class="file-input-label">Choose Source Code Files <span style="color: var(--accent-color)">*</span></label>
+                    <input type="file" id="source-code" name="source_code" multiple required
+                           onchange="handleFileSelect(this, 'source-code-list')">
                     <div id="source-code-list" class="file-list"></div>
                 </div>
 
                 <div class="file-input-container">
                     <label for="presentation" class="file-input-label">Choose Presentation Files (PDF)</label>
-                    <input type="file" id="presentation" name="presentation" accept=".pdf" multiple onchange="handleFileSelect(this, 'presentation-list')">
+                    <input type="file" id="presentation" name="presentation" accept=".pdf" multiple 
+                           onchange="handleFileSelect(this, 'presentation-list')">
                     <div id="presentation-list" class="file-list"></div>
                 </div>
 
