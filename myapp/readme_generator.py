@@ -47,6 +47,7 @@ def create_prompt(code_contents, pdf_contents, title, description):
     6. Write in a professional yet friendly tone.
     7. Don't include Deployment, License, Usage Example and Testing 
     8. Follow the EXACT Installation guide
+    9. Based on the submitted source code, thoroughly analyze and describe the code in readme
     """
     return prompt
 
